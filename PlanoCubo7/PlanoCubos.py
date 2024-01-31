@@ -151,7 +151,6 @@ def display():
     glVertex3d(-30, 0, -90)  
     glEnd()
     
-    
     # calle 1.1
     glBegin(GL_QUADS)
     glVertex3d(-200, 30, -90)  
