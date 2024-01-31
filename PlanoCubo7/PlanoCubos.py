@@ -9,6 +9,9 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 
+# Import obj loader
+from objloader import *
+
 # Se carga el archivo de la clase Cubo
 import sys
 sys.path.append('..')
@@ -18,7 +21,7 @@ screen_width = 500
 screen_height = 500
 #vc para el obser.
 FOVY=60.0
-ZNEAR=0.01
+ZNEAR=1.0
 ZFAR=900.0
 #Variables para definir la posicion del observador
 #gluLookAt(EYE_X,EYE_Y,EYE_Z,CENTER_X,CENTER_Y,CENTER_Z,UP_X,UP_Y,UP_Z)
@@ -40,12 +43,13 @@ Z_MIN=-500
 Z_MAX=500
 #Dimension del plano
 DimBoard = 200
+objetos = []
 
 pygame.init()
 
 #cubo = Cubo(DimBoard, 1.0)
 cubos = []
-ncubos = 50
+ncubos = 0
 
 def Axis():
     glShadeModel(GL_FLAT)
@@ -88,6 +92,26 @@ def Init():
     
     for i in range(ncubos):
         cubos.append(Cubo(DimBoard, 1.0))
+    
+    glLightfv(GL_LIGHT0, GL_POSITION,  (0, 200, 0, 0.0))
+    glLightfv(GL_LIGHT0, GL_AMBIENT, (0.5, 0.5, 0.5, 1.0))
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, (0.5, 0.5, 0.5, 1.0))
+    glEnable(GL_LIGHTING)
+    glEnable(GL_LIGHT0)
+    glEnable(GL_COLOR_MATERIAL)
+    glShadeModel(GL_SMOOTH)   
+    objetos.append(OBJ("PlanoCubo7/Chevrolet_Camaro_SS_Low.obj", swapyz=True))
+    objetos[0].generate()
+        
+def displayobj():
+    glPushMatrix()  
+    #correcciones para dibujar el objeto en plano XZ
+    #esto depende de cada objeto
+    glRotatef(-90.0, 1.0, 0.0, 0.0)
+    glTranslatef(0.0, 0.0, 15.0)
+    glScale(10.0,10.0,10.0)
+    objetos[0].render()  
+    glPopMatrix()
 
 def display():  
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -173,6 +197,9 @@ def display():
     for obj in cubos:
         obj.draw()
         obj.update()
+        
+    # Dibujar el objeto cargado
+    displayobj()
     
 done = False
 Init()
