@@ -8,3 +8,6 @@ Durante las últimas décadas, ha existido una tendencia alarmante de un increme
 Para que México pueda estar entre las economías más grandes del mundo, es necesario mejorar la movilidad en sus ciudades, lo que es crítico para las actividades económicas y la calidad de vida de millones de personas.
 
 Este reto te permitirá proponer una solución al problema de movilidad urbana en México, mediante un enfoque que reduzca la congestión vehicular al simular de manera gráfica el tráfico, representando la salida de un sistema multi agentes.
+
+## Mapa modelado
+![image](https://github.com/soosw/MultiAgentes/assets/75228128/38020e0d-6d87-4601-9d5f-ceeaccf8f0cb)
