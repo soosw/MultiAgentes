@@ -110,6 +110,9 @@ def Init():
     glShadeModel(GL_SMOOTH)   
     
     objetos.append(OBJ("models/Lowpoly_tree_sample.obj", swapyz=True))
+    objetos.append(OBJ("models/House.obj", swapyz=True))
+    objetos.append(OBJ("models/Treelow.obj", swapyz=True))
+    objetos.append(OBJ("models/building.obj", swapyz=True))
     objetos[0].generate()
 
 def Texturas(filepath):
@@ -154,11 +157,43 @@ def displayTree2():
 def displayTree3():
     glPushMatrix()  
     glRotatef(-90.0, 1.0, 0.0, 0.0)
-    glTranslatef(-155.0, 125.0, 0.0)
-    glScale(3.0,3.0,3.0)
-    objetos[0].render()  
+    glTranslatef(-55.0, 175.0, 0.0)
+    glScale(0.8,0.8,0.8)
+    objetos[2].render()  
     glPopMatrix()
 
+def displayHouse():
+    glPushMatrix()  
+    glRotatef(-90.0, 1.0, 0.0, 0.0)
+    glTranslatef(-125.0, 150.0, 0.0)
+    glScale(5.5,5.5,5.5)
+    objetos[1].render()  
+    glPopMatrix()
+    
+def displayBuilding1():
+    glPushMatrix()  
+    glRotatef(0.0, 1.0, 0.0, 0.0)
+    glTranslatef(-125.0, 0.0, 0.0)
+    glScale(25.5,25.5,25.5)
+    objetos[3].render()  
+    glPopMatrix()
+
+def displayBuilding2():
+    glPushMatrix()  
+    glRotatef(0.0, 1.0, 0.0, 0.0)
+    glTranslatef(-125.0, 0.0, 150.0)
+    glScale(25.5,25.5,25.5)
+    objetos[3].render()  
+    glPopMatrix()
+
+def displayBuilding3():
+    glPushMatrix()  
+    glRotatef(0.0, 1.0, 0.0, 0.0)
+    glTranslatef(125.0, 0.0, -150.0)
+    glScale(25.5,25.5,25.5)
+    objetos[3].render()  
+    glPopMatrix()
+    
 def display():  
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     # Establecer el modo de relleno para el plano
@@ -360,6 +395,10 @@ def display():
     displayTree1()
     displayTree2()
     displayTree3()
+    displayHouse()
+    displayBuilding1()
+    displayBuilding2()
+    displayBuilding3()
     
 done = False
 Init()

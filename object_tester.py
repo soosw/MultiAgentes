@@ -100,16 +100,16 @@ def Init():
     glEnable(GL_LIGHT0)
     glEnable(GL_COLOR_MATERIAL)
     glShadeModel(GL_SMOOTH)   
-    objetos.append(OBJ("models/lowpolyhouse.obj", swapyz=True))
+    objetos.append(OBJ("models/building.obj", swapyz=True))
     objetos[0].generate()
         
 def displayobj():
     glPushMatrix()  
     #correcciones para dibujar el objeto en plano XZ
     #esto depende de cada objeto
-    glRotatef(-90.0, 1.0, 0.0, 0.0)
+    glRotatef(0.0, 1.0, 0.0, 0.0)
     glTranslatef(0.0, 0.0, 15.0)
-    glScale(10.0,10.0,10.0)
+    glScale(20.0,20.0,20.0)
     objetos[0].render()  
     glPopMatrix()
 

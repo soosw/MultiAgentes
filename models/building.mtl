@@ -1,0 +1,7 @@
+# building.mtl
+
+newmtl building_material
+Ka 0.6 0.6 0.6
+Kd 0.6 0.6 0.6
+Ks 0.8 0.8 0.8
+Ns 100
