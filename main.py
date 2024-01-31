@@ -11,7 +11,7 @@ from OpenGL.GLU import *
 from OpenGL.GLUT import *
 
 # Import obj loader
-from objloader import *
+from loaders.objloader import *
 
 # Se carga el archivo de la clase Cubo
 import sys
@@ -57,8 +57,8 @@ ncubos = 0
 
 #Arreglo para el manejo de texturas
 textures = []
-texturaFondo = "textura3.bmp"
-texturaCalle = "Asphalt_Intersect.bmp"
+texturaFondo = "textures/textura3.bmp"
+texturaCalle = "textures/Asphalt_Intersect.bmp"
 
 def Axis():
     glShadeModel(GL_FLAT)
@@ -98,7 +98,8 @@ def Init():
     glClearColor(0,0,0,0)
     glEnable(GL_DEPTH_TEST)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
-
+    
+    # !!! esto ha cambiado
     Texturas(texturaFondo)
     Texturas(texturaCalle)
 
@@ -113,8 +114,12 @@ def Init():
     glEnable(GL_LIGHT0)
     glEnable(GL_COLOR_MATERIAL)
     glShadeModel(GL_SMOOTH)   
-    objetos.append(OBJ("Chevrolet_Camaro_SS_Low.obj", swapyz=True))
+    
+    objetos.append(OBJ("models/Lowpoly_tree_sample.obj", swapyz=True))
     objetos[0].generate()
+
+    
+
 
 def Texturas(filepath):
     textures.append(glGenTextures(1))
@@ -145,7 +150,7 @@ def displayobj():
     #esto depende de cada objeto
     glRotatef(-90.0, 1.0, 0.0, 0.0)
     glTranslatef(0.0, 0.0, 15.0)
-    glScale(10.0,10.0,10.0)
+    glScale(3.0,3.0,3.0)
     objetos[0].render()  
     glPopMatrix()
 
@@ -181,7 +186,7 @@ def display():
     glColor3f(1.0, 1.0, 1.0)  # Color para los prismas rectangulares
 
     # Cambiar valor de y de las calles a ~1 cuando se termine la colocacion de edificios
-
+    
     # calle 1
     glBegin(GL_QUADS)
     glVertex3d(-30, 30, -90)
@@ -345,13 +350,13 @@ def display():
     # Restaurar el modo de línea para otros elementos
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
 
-    # Dibujar cubos con relleno 
-    #glColor3f(0.2, 0.4, 0.6)  # Color azul para los cubos
-    #glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
-    #Se dibuja cubos
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+
     for obj in cubos:
         obj.draw()
         obj.update()
+    
+    displayobj()
     
 done = False
 Init()
