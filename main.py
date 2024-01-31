@@ -4,18 +4,13 @@
 import pygame
 import math
 from pygame.locals import *
-
-# Cargamos las bibliotecas de OpenGL
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
-
-# Import obj loader
 from loaders.objloader import *
-
-# Se carga el archivo de la clase Cubo
 import sys
 sys.path.append('..')
+
 from Cubo import Cubo
 
 screen_width = 500
@@ -99,7 +94,6 @@ def Init():
     glEnable(GL_DEPTH_TEST)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
     
-    # !!! esto ha cambiado
     Texturas(texturaFondo)
     Texturas(texturaCalle)
 
@@ -117,9 +111,6 @@ def Init():
     
     objetos.append(OBJ("models/Lowpoly_tree_sample.obj", swapyz=True))
     objetos[0].generate()
-
-    
-
 
 def Texturas(filepath):
     textures.append(glGenTextures(1))
@@ -144,20 +135,32 @@ def lookat():
     glLoadIdentity()
     gluLookAt(EYE_X,EYE_Y,EYE_Z,CENTER_X,CENTER_Y,CENTER_Z,UP_X,UP_Y,UP_Z)
 
-def displayobj():
+def displayTree1():
     glPushMatrix()  
-    #correcciones para dibujar el objeto en plano XZ
-    #esto depende de cada objeto
     glRotatef(-90.0, 1.0, 0.0, 0.0)
-    glTranslatef(0.0, 0.0, 15.0)
+    glTranslatef(100.0, 0.0, 0)
+    glScale(3.0,3.0,3.0)
+    objetos[0].render()  
+    glPopMatrix()
+    
+def displayTree2():
+    glPushMatrix()  
+    glRotatef(-90.0, 1.0, 0.0, 0.0)
+    glTranslatef(150.0, -150.0, 0.0)
+    glScale(3.0,3.0,3.0)
+    objetos[0].render()  
+    glPopMatrix()
+
+def displayTree3():
+    glPushMatrix()  
+    glRotatef(-90.0, 1.0, 0.0, 0.0)
+    glTranslatef(-155.0, 125.0, 0.0)
     glScale(3.0,3.0,3.0)
     objetos[0].render()  
     glPopMatrix()
 
 def display():  
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    # Axis()
-    
     # Establecer el modo de relleno para el plano
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
@@ -177,8 +180,6 @@ def display():
     glVertex3d(DimBoard, 0, -DimBoard)
     glEnd()
     glDisable(GL_TEXTURE_2D)
-
-    # Restaurar el modo de línea para otros elementos
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
     
@@ -356,7 +357,9 @@ def display():
         obj.draw()
         obj.update()
     
-    displayobj()
+    displayTree1()
+    displayTree2()
+    displayTree3()
     
 done = False
 Init()
