@@ -92,7 +92,7 @@ def Init():
 def display():  
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     # Axis()
-
+    
     # Establecer el modo de relleno para el plano
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
@@ -114,10 +114,130 @@ def display():
     glDisable(GL_TEXTURE_2D)
 
     # Restaurar el modo de línea para otros elementos
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+
+    
+    # Dibujar el plano de la calle
+    glColor3f(0, 0, 0)  # Color para los prismas rectangulares
+    # calle 1
+    glBegin(GL_QUADS)
+    glVertex3d(-30, 30, -90)  
+    glVertex3d(-30, 30, -200)  
+    glVertex3d(-30, 0, -200)  
+    glVertex3d(-30, 0, -90)  
+    glEnd()
+    
+    
+    # calle 1.1
+    glBegin(GL_QUADS)
+    glVertex3d(-200, 30, -90)  
+    glVertex3d(-30, 30, -90)  
+    glVertex3d(-30, 0, -90)  
+    glVertex3d(-200, 0, -90)  
+    glEnd()
+    
+    # calle 2
+    glBegin(GL_QUADS)
+    glVertex3d(-30, 30, 90)  
+    glVertex3d(-30, 30, 20)  
+    glVertex3d(-30, 0, 20)  
+    glVertex3d(-30, 0, 90)  
+    glEnd()
+    
+    #calle 2.1
+    glBegin(GL_QUADS)
+    glVertex3d(-200, 30, 20)   
+    glVertex3d(-30, 30, 20)    
+    glVertex3d(-30, 0, 20)  
+    glVertex3d(-200, 0, 20)  
+    glEnd()
+    
+    #calle 2.2
+    glBegin(GL_QUADS)
+    glVertex3d(-200, 30, 90)   
+    glVertex3d(-30, 30, 90)    
+    glVertex3d(-30, 0, 90)  
+    glVertex3d(-200, 0, 90)  
+    glEnd()
+    
+    # calle 6
+    glBegin(GL_QUADS)
+    glVertex3d(-30, 30, 200)  
+    glVertex3d(-30, 30, 150)  
+    glVertex3d(-30, 0, 150)  
+    glVertex3d(-30, 0, 200)  
+    glEnd()
+    
+    #calle 6.1
+    glBegin(GL_QUADS)
+    glVertex3d(-200, 30, 150)   
+    glVertex3d(-30, 30, 150)    
+    glVertex3d(-30, 0, 150)  
+    glVertex3d(-200, 0, 150)  
+    glEnd()
+
+    # calle 3
+    glBegin(GL_QUADS)
+    glVertex3d(120, 30, -30)  
+    glVertex3d(120, 30, -120)  
+    glVertex3d(120, 50, -120) 
+    glVertex3d(120, 50, -30)  
+    glEnd()
+    
+    # calle 3.1
+    glBegin(GL_QUADS)
+    glVertex3d(210, 30, -30)  
+    glVertex3d(120, 30, -30)  
+    glVertex3d(120, 50, -30) 
+    glVertex3d(210, 50, -30)  
+    glEnd()
+    
+    
+    # calle 4
+    glBegin(GL_QUADS)
+    glVertex3d(120, 30, 110)   
+    glVertex3d(120, 30, 50)  
+    glVertex3d(120, 50, 50)
+    glVertex3d(120, 50, 110)
+    glEnd()
+    
+    #calle 4.1
+    glBegin(GL_QUADS)
+    glVertex3d(200, 30, 15)   
+    glVertex3d(92, 30, 15)    
+    glVertex3d(92, 0, 15)  
+    glVertex3d(200, 0, 15)  
+    glEnd()
+    
+    #calle 4.2
+    glBegin(GL_QUADS)
+    glVertex3d(200, 30, 80)   
+    glVertex3d(92, 30, 80)    
+    glVertex3d(92, 0, 80)  
+    glVertex3d(200, 0, 80)  
+    glEnd()
+    
+    # calle 5
+    glBegin(GL_QUADS)
+    glVertex3d(120, 30, 210)   
+    glVertex3d(120, 30, 170)  
+    glVertex3d(120, 50, 170)
+    glVertex3d(120, 50, 210)
+    glEnd()
+    
+    #calle 5.1
+    glBegin(GL_QUADS)
+    glVertex3d(200, 30, 150)   
+    glVertex3d(92, 30, 150)    
+    glVertex3d(92, 0, 150)  
+    glVertex3d(200, 0, 150)  
+    glEnd()
+    
+    # Restaurar el modo de línea para otros elementos
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
 
     
-    glColor3f(0.8, 0.8, 0.8)  # Color gris claro para las paredes
+    glColor3f(0.2, 0.6, 0.2)  # Color para las paredes
 
     # Establecer el modo de relleno para las paredes
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
@@ -155,7 +275,7 @@ def display():
     glEnd()
 
     # Dibujar puerta de color café fuera del plano
-    glColor3f(0.4, 0.2, 0.0)  # Color café oscuro para la puerta
+    glColor3f(0.6, 0.3, 0.1)  # Color café oscuro para la puerta
     glBegin(GL_QUADS)
     glVertex3d(-50, 0, DimBoard + 10)  # Ajustar la posición en Z para colocar la puerta fuera del plano
     glVertex3d(-50, 0, DimBoard - 20)  # Ajustar la posición en Z para colocar la puerta fuera del plano
@@ -167,12 +287,12 @@ def display():
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
 
     # Dibujar cubos con relleno 
-    glColor3f(0.2, 0.4, 0.6)  # Color azul para los cubos
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+    #glColor3f(0.2, 0.4, 0.6)  # Color azul para los cubos
+    #glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
     #Se dibuja cubos
-    for obj in cubos:
-        obj.draw()
-        obj.update()
+    #for obj in cubos:
+    #    obj.draw()
+    #    obj.update()
     
 done = False
 Init()
