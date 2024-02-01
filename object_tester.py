@@ -15,7 +15,7 @@ from loaders.objloader import *
 # Se carga el archivo de la clase Cubo
 import sys
 sys.path.append('..')
-from Cubo import Cubo
+from Carro import Cubo
 
 screen_width = 500
 screen_height = 500

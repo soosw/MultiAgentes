@@ -1,6 +1,3 @@
-#Autor: Ivan Olmos Pineda
-#Curso: Multiagentes - Graficas Computacionales
-
 import pygame
 import math
 from pygame.locals import *
@@ -11,7 +8,7 @@ from loaders.objloader import *
 import sys
 sys.path.append('..')
 
-from Cubo import Cubo
+from Carro import Carro
 
 screen_width = 500
 screen_height = 500
@@ -48,7 +45,7 @@ pygame.init()
 
 #cubo = Cubo(DimBoard, 1.0)
 cubos = []
-ncubos = 0
+ncubos = 1
 
 #Arreglo para el manejo de texturas
 textures = []
@@ -97,23 +94,25 @@ def Init():
     Texturas(texturaFondo)
     Texturas(texturaCalle)
 
-    for i in range(ncubos):
-        cubos.append(Cubo(DimBoard, 1.0))
-    
-    glLightfv(GL_LIGHT0, GL_POSITION,  (0, 200, 0, 0.0))
+    glLightfv(GL_LIGHT0, GL_POSITION, (0, 200, 0, 0.0))
     glLightfv(GL_LIGHT0, GL_AMBIENT, (0.5, 0.5, 0.5, 1.0))
     glLightfv(GL_LIGHT0, GL_DIFFUSE, (0.5, 0.5, 0.5, 1.0))
     glEnable(GL_LIGHTING)
-    glEnable(GL_LIGHTING)
     glEnable(GL_LIGHT0)
     glEnable(GL_COLOR_MATERIAL)
-    glShadeModel(GL_SMOOTH)   
-    
+    glShadeModel(GL_SMOOTH)
+
     objetos.append(OBJ("models/Lowpoly_tree_sample.obj", swapyz=True))
     objetos.append(OBJ("models/House.obj", swapyz=True))
     objetos.append(OBJ("models/Treelow.obj", swapyz=True))
-    objetos.append(OBJ("models/building.obj", swapyz=True))
+    objetos.append(OBJ("models/building2.obj", swapyz=True))
+    objetos.append(OBJ("models/Chevrolet_Camaro_SS_Low.obj", swapyz=True))
     objetos[0].generate()
+
+    for i in range(ncubos):
+        cubos.append(Carro(DimBoard, 1.0, objetos[4]))
+    
+
 
 def Texturas(filepath):
     textures.append(glGenTextures(1))
@@ -138,20 +137,42 @@ def lookat():
     glLoadIdentity()
     gluLookAt(EYE_X,EYE_Y,EYE_Z,CENTER_X,CENTER_Y,CENTER_Z,UP_X,UP_Y,UP_Z)
 
+def displayCar():
+    glPushMatrix()
+    glRotatef(-90.0, 1.0, 0.0, 0.0)
+    glTranslatef(0.0, 0.0, -5.0)
+    glScale(3.0,3.0,3.0)
+    objetos[4].render()
+    glPopMatrix()
+
 def displayTree1():
     glPushMatrix()  
     glRotatef(-90.0, 1.0, 0.0, 0.0)
     glTranslatef(100.0, 0.0, 0)
-    glScale(3.0,3.0,3.0)
-    objetos[0].render()  
+    glScale(2.0,2.0,2.0)
+    objetos[0].render()
+    glTranslatef(25.0, -10.0, 0.0)
+    objetos[0].render()
+    glTranslatef(10.0, 15.0, 0.0)
+    objetos[0].render()
+    glTranslatef(-50.0, 0.0, 0.0)
+    objetos[0].render()
+    glTranslatef(0.0, -15.0, 0.0)
+    objetos[0].render()
     glPopMatrix()
     
 def displayTree2():
     glPushMatrix()  
     glRotatef(-90.0, 1.0, 0.0, 0.0)
     glTranslatef(150.0, -150.0, 0.0)
-    glScale(3.0,3.0,3.0)
-    objetos[0].render()  
+    glScale(2.0,2.0,2.0)
+    objetos[0].render()
+    glTranslatef(-20.0, 10.0, 0.0)
+    objetos[0].render()
+    glTranslatef(0.0, -15.0, 0.0)
+    objetos[0].render()
+    glTranslatef(-20.0, 10.0, 0.0)
+    objetos[0].render()
     glPopMatrix()
 
 def displayTree3():
@@ -159,7 +180,7 @@ def displayTree3():
     glRotatef(-90.0, 1.0, 0.0, 0.0)
     glTranslatef(-55.0, 175.0, 0.0)
     glScale(0.8,0.8,0.8)
-    objetos[2].render()  
+    objetos[2].render()
     glPopMatrix()
 
 def displayHouse():
@@ -171,26 +192,26 @@ def displayHouse():
     glPopMatrix()
     
 def displayBuilding1():
-    glPushMatrix()  
-    glRotatef(0.0, 1.0, 0.0, 0.0)
-    glTranslatef(-125.0, 0.0, 0.0)
-    glScale(25.5,25.5,25.5)
+    glPushMatrix()
+    glTranslatef(-125.0, -12.0, 20.0)
+    glRotatef(-90.0, 1.0, 0.0, 0.0)
+    glScale(2.5,2.5,2.5)
     objetos[3].render()  
     glPopMatrix()
 
 def displayBuilding2():
-    glPushMatrix()  
-    glRotatef(0.0, 1.0, 0.0, 0.0)
-    glTranslatef(-125.0, 0.0, 150.0)
-    glScale(25.5,25.5,25.5)
+    glPushMatrix()
+    glTranslatef(-125.0, -13.0, 150.0)
+    glRotatef(-90.0, 1.0, 0.0, 0.0)
+    glScale(2.5,2.5,2.5)
     objetos[3].render()  
     glPopMatrix()
 
 def displayBuilding3():
-    glPushMatrix()  
-    glRotatef(0.0, 1.0, 0.0, 0.0)
-    glTranslatef(125.0, 0.0, -150.0)
-    glScale(25.5,25.5,25.5)
+    glPushMatrix()
+    glTranslatef(125.0, -13.0, -145.0)
+    glRotatef(270.0, 1.0, 0.0, 0.0)
+    glScale(2.5,2.5,2.5)
     objetos[3].render()  
     glPopMatrix()
     
@@ -198,7 +219,7 @@ def display():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     # Establecer el modo de relleno para el plano
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
-
+    #Axis()
     # Activar el uso de texturas
     glEnable(GL_TEXTURE_2D)
     # Se dibuja el plano con textura de asfalto
@@ -214,10 +235,11 @@ def display():
     glTexCoord2f(0.0, 1.0)
     glVertex3d(DimBoard, 0, -DimBoard)
     glEnd()
+    # Clear the texture unit and disable textures
     glDisable(GL_TEXTURE_2D)
+    glBindTexture(GL_TEXTURE_2D, 0)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
-    
     # Dibujar el plano de la calle
     glColor3f(1.0, 1.0, 1.0)  # Color para los prismas rectangulares
 
@@ -225,112 +247,112 @@ def display():
     
     # calle 1
     glBegin(GL_QUADS)
-    glVertex3d(-30, 30, -90)
-    glVertex3d(-30, 30, -200)
+    glVertex3d(-30, 1, -90)
+    glVertex3d(-30, 1, -200)
     glVertex3d(-30, 0, -200)
     glVertex3d(-30, 0, -90)
     glEnd()
     
     # calle 1.1
     glBegin(GL_QUADS)
-    glVertex3d(-200, 30, -90)
-    glVertex3d(-30, 30, -90)
+    glVertex3d(-200, 1, -90)
+    glVertex3d(-30, 1, -90)
     glVertex3d(-30, 0, -90)  
     glVertex3d(-200, 0, -90)
     glEnd()
 
     # calle 2
     glBegin(GL_QUADS)
-    glVertex3d(-30, 30, 50)
-    glVertex3d(-30, 30, -20)
+    glVertex3d(-30, 1, 50)
+    glVertex3d(-30, 1, -20)
     glVertex3d(-30, 0, -20)
     glVertex3d(-30, 0, 50)
     glEnd()
     
     #calle 2.1
     glBegin(GL_QUADS)
-    glVertex3d(-200, 30, -20)
-    glVertex3d(-30, 30, -20)
+    glVertex3d(-200, 1, -20)
+    glVertex3d(-30, 1, -20)
     glVertex3d(-30, 0, -20)
     glVertex3d(-200, 0, -20)
     glEnd()
     
     #calle 2.2
     glBegin(GL_QUADS)
-    glVertex3d(-200, 30, 50)
-    glVertex3d(-30, 30, 50)
+    glVertex3d(-200, 1, 50)
+    glVertex3d(-30, 1, 50)
     glVertex3d(-30, 0, 50)
     glVertex3d(-200, 0, 50)
     glEnd()
     
     # calle 6
     glBegin(GL_QUADS)
-    glVertex3d(-40, 30, 200)
-    glVertex3d(-40, 30, 120)
+    glVertex3d(-40, 1, 200)
+    glVertex3d(-40, 1, 120)
     glVertex3d(-40, 0, 120)
     glVertex3d(-40, 0, 200)
     glEnd()
 
     #calle 6.1
     glBegin(GL_QUADS)
-    glVertex3d(-200, 30, 120)
-    glVertex3d(-40, 30, 120)
+    glVertex3d(-200, 1, 120)
+    glVertex3d(-40, 1, 120)
     glVertex3d(-40, 0, 120)
     glVertex3d(-200, 0, 120)
     glEnd()
 
     # calle 3
     glBegin(GL_QUADS)
-    glVertex3d(40, 30, -90)
-    glVertex3d(40, 30, -200)
+    glVertex3d(40, 1, -90)
+    glVertex3d(40, 1, -200)
     glVertex3d(40, 0, -200)
     glVertex3d(40, 0, -90)
     glEnd()
 
     # calle 3.1
     glBegin(GL_QUADS)
-    glVertex3d(200, 30, -90)
-    glVertex3d(40, 30, -90)
+    glVertex3d(200, 1, -90)
+    glVertex3d(40, 1, -90)
     glVertex3d(40, 0, -90)
     glVertex3d(200, 0, -90)
     glEnd()
 
     # calle 4
     glBegin(GL_QUADS)
-    glVertex3d(40, 30, 50)
-    glVertex3d(40, 30, -20)
+    glVertex3d(40, 1, 50)
+    glVertex3d(40, 1, -20)
     glVertex3d(40, 0, -20)
     glVertex3d(40, 0, 50)
     glEnd()
 
     #calle 4.1
     glBegin(GL_QUADS)
-    glVertex3d(200, 30, -20)
-    glVertex3d(40, 30, -20)
+    glVertex3d(200, 1, -20)
+    glVertex3d(40, 1, -20)
     glVertex3d(40, 0, -20)
     glVertex3d(200, 0, -20)
     glEnd()
 
     #calle 4.2
     glBegin(GL_QUADS)
-    glVertex3d(200, 30, 50)
-    glVertex3d(40, 30, 50)
+    glVertex3d(200, 1, 50)
+    glVertex3d(40, 1, 50)
     glVertex3d(40, 0, 50)
     glVertex3d(200, 0, 50)
     glEnd()
     
     # calle 5
     glBegin(GL_QUADS)
-    glVertex3d(40, 30, 200)
-    glVertex3d(40, 30, 120)
+    glVertex3d(40, 1, 200)
+    glVertex3d(40, 1, 120)
     glVertex3d(40, 0, 120)
     glVertex3d(40, 0, 200)
     glEnd()
     
     #calle 5.1
     glBegin(GL_QUADS)
-    glVertex3d(200, 30, 120)
-    glVertex3d(40, 30, 120)
+    glVertex3d(200, 1, 120)
+    glVertex3d(40, 1, 120)
     glVertex3d(40, 0, 120)
     glVertex3d(200, 0, 120)
     glEnd()
@@ -345,11 +367,10 @@ def display():
     # Establecer el modo de relleno para las paredes
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
-
-    # Se dibujan las paredes con textura de ciudad?
-    # glEnable(GL_TEXTURE_2D)
-    # glBindTexture(GL_TEXTURE_2D, textures[0])
-    # glColor3f(1.0, 1.0, 1.0)
+    # Se dibujan las paredes con textura de ciudad (revisar)
+    glEnable(GL_TEXTURE_2D)
+    glBindTexture(GL_TEXTURE_2D, textures[0])
+    glColor3f(1.0, 1.0, 1.0)
 
     # Pared frontal
     glBegin(GL_QUADS)
@@ -358,7 +379,6 @@ def display():
     glVertex3d(DimBoard, 0, DimBoard)
     glVertex3d(-DimBoard, 0, DimBoard)
     glEnd()
-    glDisable(GL_TEXTURE_2D)
     # Pared trasera
     glBegin(GL_QUADS)
     glVertex3d(-DimBoard, 30, -DimBoard)
@@ -383,15 +403,17 @@ def display():
     glVertex3d(DimBoard, 0, -DimBoard)
     glEnd()
     glDisable(GL_TEXTURE_2D)
+    glBindTexture(GL_TEXTURE_2D, 0)
+
     # Restaurar el modo de línea para otros elementos
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
-
+    glColor3f(1.0, 1.0, 1.0)
     for obj in cubos:
         obj.draw()
         obj.update()
-    
+
     displayTree1()
     displayTree2()
     displayTree3()
@@ -399,7 +421,9 @@ def display():
     displayBuilding1()
     displayBuilding2()
     displayBuilding3()
-    
+    displayCar()
+
+
 done = False
 Init()
 while not done:
