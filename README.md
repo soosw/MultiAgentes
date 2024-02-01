@@ -10,4 +10,5 @@ Para que México pueda estar entre las economías más grandes del mundo, es nec
 Este reto te permitirá proponer una solución al problema de movilidad urbana en México, mediante un enfoque que reduzca la congestión vehicular al simular de manera gráfica el tráfico, representando la salida de un sistema multi agentes.
 
 ## Mapa modelado
-![image](https://github.com/soosw/MultiAgentes/assets/75228128/38020e0d-6d87-4601-9d5f-ceeaccf8f0cb)
+![image](https://github.com/soosw/MultiAgentes/assets/75228128/cdc6c43d-8ea5-49e4-967e-c866f3d6e2fa)
+
