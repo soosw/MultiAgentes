@@ -87,7 +87,7 @@ class Carro:
         glPushMatrix()
         glTranslatef(self.Position[0], self.Position[1], self.Position[2])
         glRotatef(-90.0, 1.0, 0.0, 0.0)
-        glScaled(3,3,3)
+        glScaled(5,5,5)
         glColor3f(1.0, 1.0, 1.0)
         glRotatef(self.currentRotation, 0.0, 0.0, 1.0)
         self.obj.render()

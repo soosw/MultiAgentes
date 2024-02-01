@@ -15,7 +15,7 @@ from loaders.objloader import *
 # Se carga el archivo de la clase Cubo
 import sys
 sys.path.append('..')
-from Carro import Cubo
+from Carro import Carro
 
 screen_width = 500
 screen_height = 500
@@ -91,7 +91,7 @@ def Init():
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
     
     for i in range(ncubos):
-        cubos.append(Cubo(DimBoard, 1.0))
+        cubos.append(Carro(DimBoard, 1.0))
     
     glLightfv(GL_LIGHT0, GL_POSITION,  (0, 200, 0, 0.0))
     glLightfv(GL_LIGHT0, GL_AMBIENT, (0.5, 0.5, 0.5, 1.0))
@@ -100,16 +100,16 @@ def Init():
     glEnable(GL_LIGHT0)
     glEnable(GL_COLOR_MATERIAL)
     glShadeModel(GL_SMOOTH)   
-    objetos.append(OBJ("models/building.obj", swapyz=True))
+    objetos.append(OBJ("models/traffi_light.obj", swapyz=True))
     objetos[0].generate()
         
 def displayobj():
     glPushMatrix()  
     #correcciones para dibujar el objeto en plano XZ
     #esto depende de cada objeto
-    glRotatef(0.0, 1.0, 0.0, 0.0)
+    glRotatef(-90.0, 1.0, 0.0, 0.0)
     glTranslatef(0.0, 0.0, 15.0)
-    glScale(20.0,20.0,20.0)
+    glScale(5.0,5.0,5.0)
     objetos[0].render()  
     glPopMatrix()
 

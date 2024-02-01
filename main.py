@@ -107,6 +107,7 @@ def Init():
     objetos.append(OBJ("models/Treelow.obj", swapyz=True))
     objetos.append(OBJ("models/building2.obj", swapyz=True))
     objetos.append(OBJ("models/Chevrolet_Camaro_SS_Low.obj", swapyz=True))
+    objetos.append(OBJ("models/traffi_light.obj", swapyz=True))
     objetos[0].generate()
 
     for i in range(ncubos):
@@ -141,7 +142,7 @@ def displayCar():
     glPushMatrix()
     glRotatef(-90.0, 1.0, 0.0, 0.0)
     glTranslatef(0.0, 0.0, -5.0)
-    glScale(3.0,3.0,3.0)
+    glScale(5.0,5.0,5.0)
     objetos[4].render()
     glPopMatrix()
 
@@ -213,6 +214,14 @@ def displayBuilding3():
     glRotatef(270.0, 1.0, 0.0, 0.0)
     glScale(2.5,2.5,2.5)
     objetos[3].render()  
+    glPopMatrix()
+    
+def displayTrafficLight(x, y, z):
+    glPushMatrix()
+    glTranslatef(x, y, z)
+    glRotatef(-90.0, 1.0, 0.0, 0.0)
+    glScale(2.5,2.5,2.5)
+    objetos[5].render()  
     glPopMatrix()
     
 def display():  
@@ -421,7 +430,9 @@ def display():
     displayBuilding1()
     displayBuilding2()
     displayBuilding3()
-    displayCar()
+    displayTrafficLight(-40, 0, 120)
+    displayTrafficLight(-40, 0, -90)
+
 
 
 done = False
