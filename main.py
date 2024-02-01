@@ -36,6 +36,7 @@ Z_MIN=-500
 Z_MAX=500
 #Dimension del plano
 DimBoard = 200
+DimFloor = 500
 objetos = []
 #Variables para el control del observador
 theta = 0.0 # Posicion angular con respecto al eje y
@@ -43,42 +44,18 @@ radius = 300
 
 pygame.init()
 
-#cubo = Cubo(DimBoard, 1.0)
-cubos = []
-ncubos = 1
+carros = []
+ncarros = 1
 
 #Arreglo para el manejo de texturas
 textures = []
 texturaFondo = "textures/textura3.bmp"
 texturaCalle = "textures/Asphalt_Intersect.bmp"
 
-def Axis():
-    glShadeModel(GL_FLAT)
-    glLineWidth(3.0)
-    #X axis in red
-    glColor3f(1.0,0.0,0.0)
-    glBegin(GL_LINES)
-    glVertex3f(X_MIN,0.0,0.0)
-    glVertex3f(X_MAX,0.0,0.0)
-    glEnd()
-    #Y axis in green
-    glColor3f(0.0,1.0,0.0)
-    glBegin(GL_LINES)
-    glVertex3f(0.0,Y_MIN,0.0)
-    glVertex3f(0.0,Y_MAX,0.0)
-    glEnd()
-    #Z axis in blue
-    glColor3f(0.0,0.0,1.0)
-    glBegin(GL_LINES)
-    glVertex3f(0.0,0.0,Z_MIN)
-    glVertex3f(0.0,0.0,Z_MAX)
-    glEnd()
-    glLineWidth(1.0)
-
 def Init():
     screen = pygame.display.set_mode(
         (screen_width, screen_height), DOUBLEBUF | OPENGL)
-    pygame.display.set_caption("OpenGL: cubos")
+    pygame.display.set_caption("OpenGL: carros")
 
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
@@ -110,8 +87,8 @@ def Init():
     objetos.append(OBJ("models/traffi_light.obj", swapyz=True))
     objetos[0].generate()
 
-    for i in range(ncubos):
-        cubos.append(Carro(DimBoard, 1.0, objetos[4]))
+    for i in range(ncarros):
+        carros.append(Carro(DimBoard, 1.0, objetos[4]))
     
 
 
@@ -225,15 +202,15 @@ def displayTrafficLight(x, y, z):
     glPopMatrix()
     
 def display():  
+    glClearColor(0.6, 0.8, 1.0, 1.0)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    # Establecer el modo de relleno para el plano
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
-    #Axis()
+    
     # Activar el uso de texturas
     glEnable(GL_TEXTURE_2D)
+    
     # Se dibuja el plano con textura de asfalto
     glBindTexture(GL_TEXTURE_2D, textures[1])
-    glColor3f(1.0, 1.0, 1.0)  # Color blanco para que la textura se muestre en su color original
+    glColor3f(1.0, 1.0, 1.0)
     glBegin(GL_QUADS)
     glTexCoord2f(0.0, 0.0)
     glVertex3d(-DimBoard, 0, -DimBoard)
@@ -244,6 +221,21 @@ def display():
     glTexCoord2f(0.0, 1.0)
     glVertex3d(DimBoard, 0, -DimBoard)
     glEnd()
+    
+    glEnable(GL_TEXTURE_2D)
+    glBindTexture(GL_TEXTURE_2D, textures[1])
+    glColor3f(1.0, 1.0, 1.0)
+    glBegin(GL_QUADS)
+    glTexCoord2f(0.0, 0.0)
+    glVertex3d(-DimFloor, 0, -DimFloor)
+    glTexCoord2f(1.0, 0.0)
+    glVertex3d(-DimFloor, 0, DimFloor)
+    glTexCoord2f(1.0, 1.0)
+    glVertex3d(DimFloor, 0, DimFloor)
+    glTexCoord2f(0.0, 1.0)
+    glVertex3d(DimFloor, 0, -DimFloor)
+    glEnd()
+    
     # Clear the texture unit and disable textures
     glDisable(GL_TEXTURE_2D)
     glBindTexture(GL_TEXTURE_2D, 0)
@@ -369,9 +361,7 @@ def display():
     # Restaurar el modo de línea para otros elementos
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
 
-    
     glColor3f(0.2, 0.6, 0.2)  # Color para las paredes
-
 
     # Establecer el modo de relleno para las paredes
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
@@ -419,10 +409,11 @@ def display():
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
     glColor3f(1.0, 1.0, 1.0)
-    for obj in cubos:
+    for obj in carros:
         obj.draw()
         obj.update()
 
+    # Se despliegan todos los objetos e el plano
     displayTree1()
     displayTree2()
     displayTree3()
@@ -434,9 +425,9 @@ def display():
     displayTrafficLight(-40, 0, -90)
 
 
-
 done = False
 Init()
+
 while not done:
     keys = pygame.key.get_pressed()
     if keys[pygame.K_RIGHT]:
@@ -455,6 +446,7 @@ while not done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
+    
     display()
 
     pygame.display.flip()
