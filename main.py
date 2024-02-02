@@ -118,7 +118,7 @@ def lookat():
 def displayCar():
     glPushMatrix()
     glRotatef(-90.0, 1.0, 0.0, 0.0)
-    glTranslatef(0.0, 0.0, -5.0)
+    glTranslatef(0.0, 0.0, -10.0)
     glScale(5.0,5.0,5.0)
     objetos[4].render()
     glPopMatrix()
@@ -204,10 +204,10 @@ def displayTrafficLight(x, y, z):
 def display():  
     glClearColor(0.6, 0.8, 1.0, 1.0)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    
+
     # Activar el uso de texturas
     glEnable(GL_TEXTURE_2D)
-    
+
     # Se dibuja el plano con textura de asfalto
     glBindTexture(GL_TEXTURE_2D, textures[1])
     glColor3f(1.0, 1.0, 1.0)
@@ -221,7 +221,7 @@ def display():
     glTexCoord2f(0.0, 1.0)
     glVertex3d(DimBoard, 0, -DimBoard)
     glEnd()
-    
+
     glEnable(GL_TEXTURE_2D)
     glBindTexture(GL_TEXTURE_2D, textures[1])
     glColor3f(1.0, 1.0, 1.0)
@@ -235,7 +235,7 @@ def display():
     glTexCoord2f(0.0, 1.0)
     glVertex3d(DimFloor, 0, -DimFloor)
     glEnd()
-    
+
     # Clear the texture unit and disable textures
     glDisable(GL_TEXTURE_2D)
     glBindTexture(GL_TEXTURE_2D, 0)
@@ -423,6 +423,9 @@ def display():
     displayBuilding3()
     displayTrafficLight(-40, 0, 120)
     displayTrafficLight(-40, 0, -90)
+    # No borrar (temp fix)
+    displayCar()
+
 
 
 done = False
@@ -446,7 +449,7 @@ while not done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
-    
+
     display()
 
     pygame.display.flip()
