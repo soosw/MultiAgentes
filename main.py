@@ -1,5 +1,3 @@
-
-
 import pygame
 import agentpy as ap
 import math
@@ -12,6 +10,7 @@ import sys
 sys.path.append('..')
 
 from Carro import Carro
+from Semaforo import Semaforo
 
 screen_width = 500
 screen_height = 500
@@ -49,6 +48,8 @@ pygame.init()
 
 carros = []
 ncarros = 3
+
+semaforos = []
 
 #Arreglo para el manejo de texturas
 textures = []
@@ -92,9 +93,13 @@ def Init():
 
     #Cambiar el ultimo parametro si quieren que aparezcan en posiciones diferentes
     carros.append(Carro(DimBoard, 1.0, objetos[4], 1))
-    carros.append(Carro(DimBoard, 1.0, objetos[4], 1))
+    carros.append(Carro(DimBoard, 1.0, objetos[4], 2))
     carros.append(Carro(DimBoard, 1.0, objetos[4], 3))
-    
+
+    semaforos.append(Semaforo(DimBoard, objetos[5], 1, carros))
+    semaforos.append(Semaforo(DimBoard, objetos[5], 2, carros))
+    semaforos.append(Semaforo(DimBoard, objetos[5], 3, carros))
+    semaforos.append(Semaforo(DimBoard, objetos[5], 4, carros))
 
 
 def Texturas(filepath):
@@ -414,10 +419,9 @@ def display():
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
     glColor3f(1.0, 1.0, 1.0)
-    for obj in carros:
-        obj.draw()
-        obj.update()
-
+    # for obj in carros:
+    #     obj.draw()
+    #     obj.update()
     # Se despliegan todos los objetos e el plano
     displayTree1()
     displayTree2()
@@ -426,8 +430,11 @@ def display():
     displayBuilding1()
     displayBuilding2()
     displayBuilding3()
-    displayTrafficLight(-40, 0, 120)
-    displayTrafficLight(-40, 0, -90)
+    # displayTrafficLight(-40, 0, 120)
+    # displayTrafficLight(-40, 0, -90)
+    #Borra cuando ya esten como agentes
+    for obj in semaforos:
+        obj.draw()
     # No borrar (temp fix)
     displayCar()
 
@@ -470,7 +477,6 @@ class SemaforoAgent(ap.Agent):
         self.posicion = posicion
         self.radio = 100
 
-    
     def step(self):
         if self.estado == "rojo" and not self.carros_parados:
             self.carros_parados = True
@@ -488,6 +494,7 @@ class SemaforoAgent(ap.Agent):
                 otros_semaforos = [self.model.get_agent(f"Semaforo_{direccion}") for direccion in self.otras_direcciones if direccion != self.direccion]
                 if any(semaforo.estado == "verde" for semaforo in otros_semaforos):
                     self.estado = "rojo"
+
     def punto_en_area_circular(self, punto):
         distancia = math.sqrt((punto[0] - self.posicion[0])**2 + (punto[1] - self.posicion[1])**2 + (punto[2] - self.posicion[2])**2)
         return distancia <= self.radio
