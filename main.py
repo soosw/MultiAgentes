@@ -437,6 +437,7 @@ class CarroAgent(ap.Agent):
         self.carroGraphic = None
         self.velocidad = 1
         self.direccion = "Norte"
+        self.detenido = False
         pass
     
     def step(self):
@@ -449,9 +450,9 @@ class CarroAgent(ap.Agent):
     
     #Update para el agente
     def update(self):
-        #Llamar a las funciones de dibujado del Cubo Grafico
-        self.carroGraphic.draw()
-        self.carroGraphic.update()
+        if not self.detenido:  # Solo actualiza y dibuja si no está detenido
+            self.carroGraphic.draw()
+            self.carroGraphic.update()
         pass
     
     def getCuboGraphic(self):
@@ -467,7 +468,7 @@ class SemaforoAgent(ap.Agent):
         self.otras_direcciones = ["Norte", "Sur", "Este", "Oeste"]
         self.carros_parados = False  # Indicador para permitir que los carros se muevan o no
         self.posicion = posicion
-        self.radio = 10
+        self.radio = 100
 
     
     def step(self):
@@ -496,22 +497,35 @@ class TraficModel(ap.Model):
     
     def setup(self):
         self.done = False
-        #Importante llamar a Init() para inicializar el Cubo Gráfico antes del Agente Cubo
+        # Importante llamar a Init() para inicializar el Cubo Gráfico antes del Agente Cubo
         Init()
         # Inicializar los semáforos con sus posiciones y direcciones
         semaforo_norte = SemaforoAgent(self, posicion=(-40, 0, 120), direccion="Norte")
         semaforo_este = SemaforoAgent(self, posicion=(-40, 0, -90), direccion="Este")
-        #Inicializar los agentes Cubos
-        self.carroslist = ap.AgentList(self,self.p.carros_n,CarroAgent)
-        #Agregar los Cubos Gráficos (definidos globalmente al inicio del código) a la lista de agentes Cubo.
+        # Inicializar los agentes Cubos
+        self.carroslist = ap.AgentList(self, self.p.carros_n, CarroAgent)
+        print("CARROS LIST: ", self.carroslist)
+        self.semaforoslist = ap.AgentList(self)
+        print("sEMAFOROS LIST: ", self.semaforoslist)
+        # Agregar los Cubos Gráficos (definidos globalmente al inicio del código) a la lista de agentes Cubo.
         self.carroslist.carroGraphic = ap.AttrIter(carros)
         pass
     
     def step(self):
-        #Llamar a Step de los agentes
         self.carroslist.step()
-        pass
-    
+        for carro in self.carroslist:
+            direccion_carro = carro.direccion
+            semaforos_misma_direccion = [semaforo for semaforo in self.semaforoslist if semaforo.direccion == direccion_carro]
+            for semaforo in semaforos_misma_direccion:
+                if semaforo.punto_en_area_circular(carro.position):
+                    if semaforo.estado == "rojo":
+                        carro.detenido = True  # Activar bandera de detención
+                        carro.velocidad = 0
+                    else:
+                        carro.detenido = False  # Desactivar bandera de detención
+                        carro.velocidad = 1  # Restablecer velocidad
+                        break
+
     def update(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -541,12 +555,12 @@ class TraficModel(ap.Model):
     
     def end(self):
         pass
-    
+
 parameters ={
     "carros_n" : ncarros,
     "steps" : 3000,
     "seed" : 21
-    }
+}
 
 model = TraficModel(parameters)
 model.run()
