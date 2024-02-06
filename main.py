@@ -1,4 +1,7 @@
+
+
 import pygame
+import agentpy as ap
 import math
 from pygame.locals import *
 from OpenGL.GL import *
@@ -45,7 +48,7 @@ radius = 300
 pygame.init()
 
 carros = []
-ncarros = 1
+ncarros = 3
 
 #Arreglo para el manejo de texturas
 textures = []
@@ -426,6 +429,79 @@ def display():
     # No borrar (temp fix)
     displayCar()
 
+#Clase del agente Cubo:
+class carAgent(ap.Agent):
+    
+    def setup(self):
+    
+        self.carGraphic = None
+        pass
+    
+    def step(self):
+        #Ejemplo de manipulación gráfica desde el agente Cubo:
+        #self.cuboGraphic.Position[0] *=1.1
+        #self.cuboGraphic.Position[0] %= 200
+        #self.cuboGraphic.Position[2] *=1.1
+        #self.cuboGraphic.Position[2] %= 200
+        pass
+    
+    #Update para el agente
+    def update(self):
+        #Llamar a las funciones de dibujado del Cubo Grafico
+        self.carGraphic.draw()
+        self.carGraphic.update()
+        pass
+    
+    def getCarGraphic(self):
+        #Por si en algún momento se necesita el Cubo Gráfico externamente
+        return self.carGraphic
+    
+    
+#Clase del modelo
+class trafficModel(ap.Model):
+    
+    def setup(self):
+        self.done = False
+        #Importante llamar a Init() para inicializar el Cubo Gráfico antes del Agente Cubo
+        Init()
+        
+        #Inicializar los agentes Cubos
+        self.carlist = ap.AgentList(self,self.p.carros_n,carAgent)
+        #Agregar los Cubos Gráficos (definidos globalmente al inicio del código) a la lista de agentes Cubo.
+        self.carlist.carGraphic = ap.AttrIter(carros)
+        pass
+    
+    def step(self):
+        #Llamar a Step de los agentes
+        self.carlist.step()
+        pass
+    
+    def update(self):
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.done = True
+        display()
+        self.carlist.update()
+        pygame.display.flip()
+        pygame.time.wait(10)
+        
+        if self.done:
+            pygame.quit()
+            self.stop()
+        pass
+    
+    def end(self):
+        pass
+    
+parameters ={
+    "carros_n" : ncarros,
+    "steps" : 3000,
+    "seed" : 21
+    }
+
+model = trafficModel(parameters)
+model.run()
 
 
 done = False
