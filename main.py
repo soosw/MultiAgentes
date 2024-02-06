@@ -545,6 +545,7 @@ class TraficModel(ap.Model):
                         break
 
     def update(self):
+        global theta
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.done = True
