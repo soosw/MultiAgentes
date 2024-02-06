@@ -92,14 +92,13 @@ def Init():
     objetos[0].generate()
 
     #Cambiar el ultimo parametro si quieren que aparezcan en posiciones diferentes
-    carros.append(Carro(DimBoard, 1.0, objetos[4], 1))
-    carros.append(Carro(DimBoard, 1.0, objetos[4], 2))
-    carros.append(Carro(DimBoard, 1.0, objetos[4], 3))
+    carros.append(Carro(DimBoard, 1.0, objetos[4], 1, "Norte"))
+    carros.append(Carro(DimBoard, 1.0, objetos[4], 2,  "Este"))
+    carros.append(Carro(DimBoard, 1.0, objetos[4], 3,  "Este"))
 
-    semaforos.append(Semaforo(DimBoard, objetos[5], 1, carros))
-    semaforos.append(Semaforo(DimBoard, objetos[5], 2, carros))
-    semaforos.append(Semaforo(DimBoard, objetos[5], 3, carros))
-    semaforos.append(Semaforo(DimBoard, objetos[5], 4, carros))
+    semaforos.append(Semaforo(DimBoard, objetos[5], 1, carros,  "Norte"))
+    semaforos.append(Semaforo(DimBoard, objetos[5], 2, carros,  "Este"))
+    semaforos.append(Semaforo(DimBoard, objetos[5], 3, carros,  "Este"))
 
 
 def Texturas(filepath):
@@ -475,9 +474,12 @@ class SemaforoAgent(ap.Agent):
         self.otras_direcciones = ["Norte", "Sur", "Este", "Oeste"]
         self.carros_parados = False  # Indicador para permitir que los carros se muevan o no
         self.posicion = posicion
+        self.semaforoGraphic = None
         self.radio = 100
 
     def step(self):
+        self.semaforoGraphic.draw()
+        self.semaforoGraphic.update()
         if self.estado == "rojo" and not self.carros_parados:
             self.carros_parados = True
         elif self.estado == "verde" and self.carros_parados:
@@ -494,7 +496,11 @@ class SemaforoAgent(ap.Agent):
                 otros_semaforos = [self.model.get_agent(f"Semaforo_{direccion}") for direccion in self.otras_direcciones if direccion != self.direccion]
                 if any(semaforo.estado == "verde" for semaforo in otros_semaforos):
                     self.estado = "rojo"
-
+    
+    def getSemaforoGraphic(self):
+        #Por si en algún momento se necesita el Cubo Gráfico externamente
+        return self.semaforoGraphic
+    
     def punto_en_area_circular(self, punto):
         distancia = math.sqrt((punto[0] - self.posicion[0])**2 + (punto[1] - self.posicion[1])**2 + (punto[2] - self.posicion[2])**2)
         return distancia <= self.radio
@@ -512,20 +518,25 @@ class TraficModel(ap.Model):
         # Inicializar los agentes Cubos
         self.carroslist = ap.AgentList(self, self.p.carros_n, CarroAgent)
         print("CARROS LIST: ", self.carroslist)
-        self.semaforoslist = ap.AgentList(self)
+        self.semaforoslist = ap.AgentList(self, self.p.carros_n, SemaforoAgent)
         print("sEMAFOROS LIST: ", self.semaforoslist)
         # Agregar los Cubos Gráficos (definidos globalmente al inicio del código) a la lista de agentes Cubo.
         self.carroslist.carroGraphic = ap.AttrIter(carros)
+        self.semaforoslist.semaforoGraphic = ap.AttrIter(semaforos)
         pass
     
     def step(self):
         self.carroslist.step()
-        for carro in self.carroslist:
-            direccion_carro = carro.direccion
-            semaforos_misma_direccion = [semaforo for semaforo in self.semaforoslist if semaforo.direccion == direccion_carro]
+        for carro in carros:
+            direccion_carro = carro.destino
+            print("ESTOY CHECANDO UN CARRO CON DESTINO", direccion_carro)
+            semaforos_misma_direccion = [semaforo for semaforo in semaforos if semaforo.destino == direccion_carro]
+            print(semaforos_misma_direccion)
             for semaforo in semaforos_misma_direccion:
-                if semaforo.punto_en_area_circular(carro.position):
-                    if semaforo.estado == "rojo":
+                if semaforo.punto_en_area_circular(carro.Position):
+                    print("ALGUNA VEZ LLEGÓ A ESTAR EN EL AREA CIRCULAR")
+                    if semaforo.state == "rojo":
+                        print("ALGUNA VEZ LLEGÓ A PARAR")
                         carro.detenido = True  # Activar bandera de detención
                         carro.velocidad = 0
                     else:
