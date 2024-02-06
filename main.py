@@ -90,8 +90,10 @@ def Init():
     objetos.append(OBJ("models/traffi_light.obj", swapyz=True))
     objetos[0].generate()
 
-    for i in range(ncarros):
-        carros.append(Carro(DimBoard, 1.0, objetos[4]))
+    #Cambiar el ultimo parametro si quieren que aparezcan en posiciones diferentes
+    carros.append(Carro(DimBoard, 1.0, objetos[4], 1))
+    carros.append(Carro(DimBoard, 1.0, objetos[4], 2))
+    carros.append(Carro(DimBoard, 1.0, objetos[4], 3))
     
 
 

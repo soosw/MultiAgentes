@@ -12,83 +12,86 @@ import numpy as np
 
 class Carro:
     
-    def __init__(self, dim, vel, obj):
-        #vertices del cubo
-        # self.points = np.array([[-1.0,-1.0, 1.0], [1.0,-1.0, 1.0], [1.0,-1.0,-1.0], [-1.0,-1.0,-1.0],
-        #                         [-1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0,-1.0], [-1.0, 1.0,-1.0]])
+    def __init__(self, dim, vel, obj, pos):
         self.obj = obj
+        self.pos = pos
         self.DimBoard = dim
-        self.rotationAngle = 0.0
-        self.currentRotation = 0.0
-        #Se inicializa una posicion aleatoria en el tablero
-        # self.Position = []
-        # self.Position.append(random.randint(-1 * self.DimBoard, self.DimBoard))
-        # self.Position.append(5.0)
-        # self.Position.append(random.randint(-1 * self.DimBoard, self.DimBoard))
+        self.vel = vel
+        self.rotationAngle = -90.0
+        self.newAngle = 0.0
         # Placeholder position
-        self.Position = []
-        self.Position.append(0.0)
-        self.Position.append(5.0)
-        self.Position.append(120.0)
-        #Se inicializa un vector de direccion aleatorio
-        # self.Direction = []
-        # self.Direction.append(random.random())
-        # self.Direction.append(5.0)
-        # self.Direction.append(random.random())
+        self.Position = [0.0,0.0,0.0]
         # Placeholder direction
-        self.Direction = []
-        self.Direction.append(0)
-        self.Direction.append(5.0)
-        self.Direction.append(-100)
-        #Se normaliza el vector de direccion
-        m = math.sqrt(self.Direction[0]*self.Direction[0] + self.Direction[2]*self.Direction[2])
-        self.Direction[0] /= m
-        self.Direction[2] /= m
-        #Se cambia la maginitud del vector direccion
-        self.Direction[0] *= vel
-        self.Direction[2] *= vel
-        self.rotationAngle = 0
-        
+        self.Direction = [0.0,0.0,0.0]
+        self.giveposition()
+        self.adjustrotation()
 
     def update(self):
         new_x = self.Position[0] + self.Direction[0]
         new_z = self.Position[2] + self.Direction[2]
+        self.adjustrotation()
 
-        if self.currentRotation != self.rotationAngle:
-            if self.currentRotation < self.rotationAngle:
-                self.currentRotation += 5
-            else:
-                self.currentRotation -= 5
+        # if self.currentRotation != self.rotationAngle:
+        #     if self.currentRotation < self.rotationAngle:
+        #         self.currentRotation += 5
+        #     else:
+        #         self.currentRotation -= 5
 
         #detecc de que el objeto no se salga del area de navegacion
-        if(abs(new_x) <= self.DimBoard):
+        if abs(new_x) <= self.DimBoard and abs(new_z) <= self.DimBoard:
             self.Position[0] = new_x
-        else:
-            self.Direction[0] *= -1.0
-            self.Direction[2] *= -1.0
-            self.Position[0] += self.Direction[0]
-            if self.currentRotation + 180 >= 360:
-                self.rotationAngle = self.currentRotation + 180 - 360
-            else:
-                self.rotationAngle = 180
-        
-        if(abs(new_z) <= self.DimBoard):
             self.Position[2] = new_z
         else:
-            self.Direction[1] *= -1.0
-            self.Direction[2] *= -1.0
-            self.Position[2] += self.Direction[2]
-            if self.currentRotation + 180 >= 360:
-                self.rotationAngle = self.currentRotation + 180 - 360
-            else:
-                self.rotationAngle = 180
+            self.giveposition()
+
+    def adjustrotation(self):
+        if self.pos == 1:
+            self.rotationAngle = -90.0
+        else:
+            self.rotationAngle = -90.0
+            self.newAngle = -90.0
+
+    def giveposition(self):
+             #Calle principal
+        if self.pos == 1:
+            self.Position[0] = 0.0
+            self.Position[1] = 5.0
+            self.Position[2] = 190.0
+            self.Direction[0] = 0.0
+            self.Direction[1] = 5.0
+            self.Direction[2] = -100.0
+            #Primera interseccion
+        elif self.pos == 2:
+            self.Position[0] = -190.0
+            self.Position[1] = 5.0
+            self.Position[2] = 90.0
+            self.Direction[0] = 100.0
+            self.Direction[1] = 5.0
+            self.Direction[2] = 0.0
+            #Segunda interseccion
+        elif self.pos == 3:
+            self.Position[0] = -190.0
+            self.Position[1] = 5.0
+            self.Position[2] = -70.0
+            self.Direction[0] = 100.0
+            self.Direction[1] = 5.0
+            self.Direction[2] = 0.0
+
+        # Se normaliza el vector de direccion
+        m = math.sqrt(self.Direction[0] * self.Direction[0] + self.Direction[2] * self.Direction[2])
+        self.Direction[0] /= m
+        self.Direction[2] /= m
+        # Se cambia la maginitud del vector direccion
+        self.Direction[0] *= self.vel
+        self.Direction[2] *= self.vel
+        self.rotationAngle = 0
 
     def draw(self):
         glPushMatrix()
         glTranslatef(self.Position[0], self.Position[1], self.Position[2])
-        glRotatef(-90.0, 1.0, 0.0, 0.0)
+        glRotatef(self.rotationAngle, 1.0, 0.0, 0.0)
+        glRotatef(self.newAngle, 0.0, 0.0, 1.0)
         glScaled(5,5,5)
         glColor3f(1.0, 1.0, 1.0)
-        glRotatef(self.currentRotation, 0.0, 0.0, 1.0)
         self.obj.render()
         glPopMatrix()
