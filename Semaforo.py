@@ -76,4 +76,12 @@ class Semaforo:
         glScaled(3, 3, 3)
         glColor3f(1.0, 1.0, 1.0)
         self.obj.render()
+        if self.state == "rojo":
+            glColor3f(1.0,0.0,0.0)
+        elif self.state == "amarillo":
+            glColor3f(1.0,1.0,0.0)
+        else:
+            glColor3f(0.0,1.0,0.0)
+        glTranslatef(0.0, 0.0, 29.0)
+        gluSphere(gluNewQuadric(),1.7,16,16)
         glPopMatrix()
