@@ -1,3 +1,4 @@
+import random
 import pygame
 import agentpy as ap
 import math
@@ -11,6 +12,9 @@ sys.path.append('..')
 
 from Carro import Carro
 from Semaforo import Semaforo
+
+#Ontologia
+from owlready2 import *
 
 screen_width = 500
 screen_height = 500
@@ -47,7 +51,7 @@ radius = 300
 pygame.init()
 
 carros = []
-ncarros = 3
+ncarros = 5
 
 semaforos = []
 
@@ -59,7 +63,7 @@ texturaCalle = "textures/Asphalt_Intersect.bmp"
 def Init():
     screen = pygame.display.set_mode(
         (screen_width, screen_height), DOUBLEBUF | OPENGL)
-    pygame.display.set_caption("OpenGL: carros")
+    pygame.display.set_caption("Simulacion interseccion")
 
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
@@ -92,6 +96,9 @@ def Init():
     objetos[0].generate()
 
     #Cambiar el ultimo parametro si quieren que aparezcan en posiciones diferentes
+    carros.append(Carro(DimBoard, 4.0, objetos[4], 1, "Norte"))
+    carros.append(Carro(DimBoard, 4.0, objetos[4], 2,  "Este"))
+    carros.append(Carro(DimBoard, 4.0, objetos[4], 3,  "Este"))
     carros.append(Carro(DimBoard, 1.0, objetos[4], 1, "Norte"))
     carros.append(Carro(DimBoard, 1.0, objetos[4], 2,  "Este"))
     carros.append(Carro(DimBoard, 1.0, objetos[4], 3,  "Este"))
@@ -437,11 +444,53 @@ def display():
     # No borrar (temp fix)
     displayCar()
 
+
+onto = get_ontology("file:///content/traffic_onto.owl")
+
+# Clase para representar un Carro
+class Carros(Thing):
+    namespace = onto
+
+# Clase para representar un Semáforo
+class Semaforos(Thing):
+    namespace = onto
+
+# Propiedad para representar la relación entre un Carro y un Semáforo
+class espera_en_semáforo(Property):
+    namespace = onto
+    domain = [Carros]
+    range = [Semaforos]
+
+# Propiedades específicas para la simulación
+class tiene_destino(Property):
+    namespace = onto
+    domain = [Carros]
+    range = [str]
+
+class estado_semáforo(Property):
+    namespace = onto
+    domain = [Semaforos]
+    range = [str]
+
+# Instancias específicas para tu simulación
+for i in range(ncarros):
+    carro = Carros(f"Carro{i}")
+    carro.tiene_destino.append("Norte")  # Establece el destino del carro
+
+for i in range(len(semaforos)):
+    semaforo = Semaforos(f"Semaforo{i}")
+    semaforo.estado_semáforo.append("rojo")  # Estado inicial del semáforo
+
+# Asociar carros con semáforos
+# for carro in onto.Carro.instances():
+#     semaforo = random.choice(onto.Semaforo.instances())
+#     carro.espera_en_semáforo.append(semaforo)
+
 #Agente Carro
 class CarroAgent(ap.Agent):
     def setup(self):
         self.carroGraphic = None
-        self.velocidad = 1
+        self.velocidad = 4
         self.direccion = "Norte"
         self.detenido = False
         pass
@@ -541,7 +590,7 @@ class TraficModel(ap.Model):
                         carro.velocidad = 0
                     else:
                         carro.detenido = False  # Desactivar bandera de detención
-                        carro.velocidad = 1  # Restablecer velocidad
+                        carro.velocidad = 4  # Restablecer velocidad
                         break
 
     def update(self):
