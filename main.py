@@ -92,7 +92,7 @@ def Init():
 
     #Cambiar el ultimo parametro si quieren que aparezcan en posiciones diferentes
     carros.append(Carro(DimBoard, 1.0, objetos[4], 1))
-    carros.append(Carro(DimBoard, 1.0, objetos[4], 2))
+    carros.append(Carro(DimBoard, 1.0, objetos[4], 1))
     carros.append(Carro(DimBoard, 1.0, objetos[4], 3))
     
 
@@ -431,66 +431,112 @@ def display():
     # No borrar (temp fix)
     displayCar()
 
-#Clase del agente Cubo:
-class carAgent(ap.Agent):
-    
+#Agente Carro
+class CarroAgent(ap.Agent):
     def setup(self):
-    
-        self.carGraphic = None
+        self.carroGraphic = None
+        self.velocidad = 1
+        self.direccion = "Norte"
         pass
     
     def step(self):
-        #Ejemplo de manipulación gráfica desde el agente Cubo:
-        #self.cuboGraphic.Position[0] *=1.1
-        #self.cuboGraphic.Position[0] %= 200
-        #self.cuboGraphic.Position[2] *=1.1
-        #self.cuboGraphic.Position[2] %= 200
+        #Ejemplo de manipulación gráfica desde el agente Carro:
+        #self.carroGraphic.Position[0] *=1.1
+        #self.carroGraphic.Position[0] %= 200
+        #self.carroGraphic.Position[2] *=1.1
+        #self.carroGraphic.Position[2] %= 200
         pass
     
     #Update para el agente
     def update(self):
         #Llamar a las funciones de dibujado del Cubo Grafico
-        self.carGraphic.draw()
-        self.carGraphic.update()
+        self.carroGraphic.draw()
+        self.carroGraphic.update()
         pass
     
-    def getCarGraphic(self):
+    def getCuboGraphic(self):
         #Por si en algún momento se necesita el Cubo Gráfico externamente
-        return self.carGraphic
+        return self.carroGraphic
     
+#Agente Semáforo
+class SemaforoAgent(ap.Agent):
+    def __init__(self, *args, posicion=(0, 0, 0), direccion="", **kwargs):
+        super().__init__(*args, **kwargs)
+        self.estado = "rojo"  # Estado inicial del semáforo
+        self.direccion = direccion  # Dirección del semáforo
+        self.otras_direcciones = ["Norte", "Sur", "Este", "Oeste"]
+        self.carros_parados = False  # Indicador para permitir que los carros se muevan o no
+        self.posicion = posicion
+        self.radio = 10
+
+    
+    def step(self):
+        if self.estado == "rojo" and not self.carros_parados:
+            self.carros_parados = True
+        elif self.estado == "verde" and self.carros_parados:
+            self.carros_parados = False
+        # Lógica para cambiar el estado del semáforo
+        if self.carros_parados:
+            # Si los semáforos en todas las direcciones diferentes están en rojo, el semáforo actual puede estar en verde
+            otros_semaforos = [self.model.get_agent(f"Semaforo_{direccion}") for direccion in self.otras_direcciones if direccion != self.direccion]
+            if all(semaforo.estado == "rojo" for semaforo in otros_semaforos):
+                self.estado = "verde"
+        else:
+            # Si el semáforo actual está en verde, verificar que algún semáforo en una dirección diferente esté en verde
+            if self.estado == "verde":
+                otros_semaforos = [self.model.get_agent(f"Semaforo_{direccion}") for direccion in self.otras_direcciones if direccion != self.direccion]
+                if any(semaforo.estado == "verde" for semaforo in otros_semaforos):
+                    self.estado = "rojo"
+    def punto_en_area_circular(self, punto):
+        distancia = math.sqrt((punto[0] - self.posicion[0])**2 + (punto[1] - self.posicion[1])**2 + (punto[2] - self.posicion[2])**2)
+        return distancia <= self.radio
     
 #Clase del modelo
-class trafficModel(ap.Model):
+class TraficModel(ap.Model):
     
     def setup(self):
         self.done = False
         #Importante llamar a Init() para inicializar el Cubo Gráfico antes del Agente Cubo
         Init()
-        
+        # Inicializar los semáforos con sus posiciones y direcciones
+        semaforo_norte = SemaforoAgent(self, posicion=(-40, 0, 120), direccion="Norte")
+        semaforo_este = SemaforoAgent(self, posicion=(-40, 0, -90), direccion="Este")
         #Inicializar los agentes Cubos
-        self.carlist = ap.AgentList(self,self.p.carros_n,carAgent)
+        self.carroslist = ap.AgentList(self,self.p.carros_n,CarroAgent)
         #Agregar los Cubos Gráficos (definidos globalmente al inicio del código) a la lista de agentes Cubo.
-        self.carlist.carGraphic = ap.AttrIter(carros)
+        self.carroslist.carroGraphic = ap.AttrIter(carros)
         pass
     
     def step(self):
         #Llamar a Step de los agentes
-        self.carlist.step()
+        self.carroslist.step()
         pass
     
     def update(self):
-        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.done = True
         display()
-        self.carlist.update()
+        self.carroslist.update()
         pygame.display.flip()
         pygame.time.wait(10)
         
         if self.done:
             pygame.quit()
             self.stop()
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_RIGHT]:
+            if theta > 359.0:
+                theta = 0
+            else:
+                theta += 1.0
+            lookat()
+        if keys[pygame.K_LEFT]:
+            if theta < 1.0:
+                theta = 360.0
+            else:
+                theta += -1.0
+            lookat()
         pass
     
     def end(self):
@@ -502,35 +548,5 @@ parameters ={
     "seed" : 21
     }
 
-model = trafficModel(parameters)
+model = TraficModel(parameters)
 model.run()
-
-
-done = False
-Init()
-
-while not done:
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_RIGHT]:
-        if theta > 359.0:
-            theta = 0
-        else:
-            theta += 1.0
-        lookat()
-    if keys[pygame.K_LEFT]:
-        if theta < 1.0:
-            theta = 360.0
-        else:
-            theta += -1.0
-        lookat()
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            done = True
-
-    display()
-
-    pygame.display.flip()
-    pygame.time.wait(10)
-
-pygame.quit()
