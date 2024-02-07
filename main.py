@@ -103,9 +103,9 @@ def Init():
     carros.append(Carro(DimBoard, 1.0, objetos[4], 2,  "Este"))
     carros.append(Carro(DimBoard, 1.0, objetos[4], 3,  "Este"))
 
-    semaforos.append(Semaforo(DimBoard, objetos[5], 1, carros,  "Norte"))
-    semaforos.append(Semaforo(DimBoard, objetos[5], 2, carros,  "Este"))
-    semaforos.append(Semaforo(DimBoard, objetos[5], 3, carros,  "Este"))
+    semaforos.append(Semaforo(DimBoard, objetos[5], 1, carros,  "Norte", "rojo"))
+    semaforos.append(Semaforo(DimBoard, objetos[5], 2, carros,  "Este", "verde"))
+    semaforos.append(Semaforo(DimBoard, objetos[5], 3, carros,  "Este", "rojo"))
 
 
 def Texturas(filepath):
@@ -493,6 +493,7 @@ class CarroAgent(ap.Agent):
         self.velocidad = 4
         self.direccion = "Norte"
         self.detenido = False
+        
         pass
     
     def step(self):
@@ -574,6 +575,8 @@ class TraficModel(ap.Model):
         self.semaforoslist.semaforoGraphic = ap.AttrIter(semaforos)
         pass
     
+
+    
     def step(self):
         self.carroslist.step()
         for carro in carros:
@@ -592,6 +595,30 @@ class TraficModel(ap.Model):
                         carro.detenido = False  # Desactivar bandera de detención
                         carro.velocidad = 4  # Restablecer velocidad
                         break
+                    
+        # self.carroslist.step()
+        # carros_esperando = calcular_carros_esperando(self.semaforoslist, self.carroslist)
+
+        # for semaforo in self.semaforoslist:
+        #     semaforo.step()
+        #     semaforo.carros_parados = True  # Establecer inicialmente a True, se actualizará en el siguiente bloque
+        #     if semaforo.estado == "rojo" and semaforo in carros_esperando:
+        #         semaforo.carros_parados = False
+
+        # for carro in self.carroslist:
+        #     direccion_carro = carro.destino
+        #     semaforos_misma_direccion = [semaforo for semaforo in self.semaforoslist if semaforo.direccion == direccion_carro]
+        #     for semaforo in semaforos_misma_direccion:
+        #         if semaforo.punto_en_area_circular(carro.Position):
+        #             if semaforo.estado == "rojo":
+        #                 carro.detenido = True
+        #                 carro.velocidad = 0
+        #             else:
+        #                 carro.detenido = False
+        #                 carro.velocidad = 4
+        #                 break
+                    
+
 
     def update(self):
         global theta
@@ -623,6 +650,16 @@ class TraficModel(ap.Model):
     
     def end(self):
         pass
+    
+def calcular_carros_esperando(semaforos, carros):
+    carros_esperando = {semaforo: 0 for semaforo in semaforos}
+
+    for carro in carros:
+        for semaforo in semaforos:
+            if semaforo.punto_en_area_circular(carro.Position):
+                carros_esperando[semaforo] += 1
+
+    return carros_esperando
 
 parameters ={
     "carros_n" : ncarros,

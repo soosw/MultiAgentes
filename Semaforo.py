@@ -13,12 +13,12 @@ import numpy as np
 
 class Semaforo:
 
-    def __init__(self, dim, obj, pos, cars, destino):
+    def __init__(self, dim, obj, pos, cars, destino,estado):
         self.obj = obj
         self.pos = pos
         self.cars = cars
         self.destino = "Norte"
-        self.state = "rojo"
+        self.state = estado
         self.radio = 50
         self.DimBoard = dim
         self.rotationAngle = -90.0
