@@ -51,8 +51,6 @@ radius = 300
 pygame.init()
 
 carros = []
-ncarros = 3
-
 semaforos = []
 
 #Arreglo para el manejo de texturas
@@ -94,18 +92,7 @@ def Init():
     objetos.append(OBJ("models/Chevrolet_Camaro_SS_Low.obj", swapyz=True))
     objetos.append(OBJ("models/traffi_light.obj", swapyz=True))
     objetos[0].generate()
-
-    #Cambiar el ultimo parametro si quieren que aparezcan en posiciones diferentes
-    carros.append(Carro(DimBoard, 4.0, objetos[4], 1, "Norte"))
-    carros.append(Carro(DimBoard, 4.0, objetos[4], 2,  "Este"))
-    carros.append(Carro(DimBoard, 4.0, objetos[4], 3,  "Este"))
-    # carros.append(Carro(DimBoard, 1.0, objetos[4], 1, "Norte"))
-    # carros.append(Carro(DimBoard, 1.0, objetos[4], 2,  "Este"))
-    # carros.append(Carro(DimBoard, 1.0, objetos[4], 3,  "Este"))
-
-    semaforos.append(Semaforo(DimBoard, objetos[5], 1, carros,  "Norte", "verde"))
-    semaforos.append(Semaforo(DimBoard, objetos[5], 2, carros,  "Este", "rojo"))
-    semaforos.append(Semaforo(DimBoard, objetos[5], 3, carros,  "Este", "rojo"))
+    print(len(objetos))
 
 
 def Texturas(filepath):
@@ -473,6 +460,7 @@ class estado_semáforo(Property):
     range = [str]
 
 # Instancias específicas para tu simulación
+"""
 for i in range(ncarros):
     carro = Carros(f"Carro{i}")
     carro.tiene_destino.append("Norte")  # Establece el destino del carro
@@ -480,144 +468,157 @@ for i in range(ncarros):
 for i in range(len(semaforos)):
     semaforo = Semaforos(f"Semaforo{i}")
     semaforo.estado_semáforo.append("rojo")  # Estado inicial del semáforo
-
+"""
 # Asociar carros con semáforos
 # for carro in onto.Carro.instances():
 #     semaforo = random.choice(onto.Semaforo.instances())
 #     carro.espera_en_semáforo.append(semaforo)
 
 #Agente Carro
-class CarroAgent(ap.Agent):
+class CarroAgente(ap.Agent):
+    global objetos
     def setup(self):
-        self.carroGraphic = None
-        self.velocidad = 4
-        self.direccion = "Norte"
+        Init()
+        #Determinar de manera random en dónde va a iniciar el carro (si se moverá de izquierda a derecha o de abajo para arriba)
+        pos = random.randint(1, 3)
+        destino = ""
+        if pos == 1:
+            destino = "Norte"
+        if pos == 2 or pos == 3:
+            destino = "Este"
+        #Determinar de manera random su velocidad
+        vel = random.randint(1,4)
+        print(len(objetos))
+        self.carroGraphic = Carro(DimBoard,vel, objetos[4], pos, destino)
         self.detenido = False
-        
-        pass
-    
     def step(self):
-        #Ejemplo de manipulación gráfica desde el agente Carro:
-        #self.carroGraphic.Position[0] *=1.1
-        #self.carroGraphic.Position[0] %= 200
-        #self.carroGraphic.Position[2] *=1.1
-        #self.carroGraphic.Position[2] %= 200
         pass
-    
-    #Update para el agente
     def update(self):
-        if not self.detenido:  # Solo actualiza y dibuja si no está detenido
+        if not self.detenido:
             self.carroGraphic.draw()
             self.carroGraphic.update()
         pass
-    
-    def getCuboGraphic(self):
-        #Por si en algún momento se necesita el Cubo Gráfico externamente
+    def getCarroGraphic(self):
         return self.carroGraphic
-    
+   
 #Agente Semáforo
-class SemaforoAgent(ap.Agent):
-    def __init__(self, *args, posicion=(0, 0, 0), direccion="", **kwargs):
-        super().__init__(*args, **kwargs)
-        self.estado = "rojo"  # Estado inicial del semáforo
-        self.direccion = direccion  # Dirección del semáforo
-        self.otras_direcciones = ["Norte", "Sur", "Este", "Oeste"]
-        self.carros_parados = False  # Indicador para permitir que los carros se muevan o no
-        self.posicion = posicion
-        self.semaforoGraphic = None
-        self.radio = 100
-
+class SemaforoAgente(ap.Agent):
+    def setup(self):
+        Init()
+        self.semaforos = {"Norte": [Semaforo(DimBoard, objetos[5], 1,  "Norte", "rojo"), Semaforo(DimBoard, objetos[5], 2,  "Norte", "rojo")], "Este":[Semaforo(DimBoard, objetos[5], 3,  "Este", "rojo"), Semaforo(DimBoard, objetos[5], 4,  "Este", "rojo")]}
+        self.ganador = "Norte"
     def step(self):
-        self.semaforoGraphic.draw()
-        self.semaforoGraphic.update()
-        if self.estado == "rojo" and not self.carros_parados:
-            self.carros_parados = True
-        elif self.estado == "verde" and self.carros_parados:
-            self.carros_parados = False
-        # Lógica para cambiar el estado del semáforo
-        if self.carros_parados:
-            # Si los semáforos en todas las direcciones diferentes están en rojo, el semáforo actual puede estar en verde
-            otros_semaforos = [self.model.get_agent(f"Semaforo_{direccion}") for direccion in self.otras_direcciones if direccion != self.direccion]
-            if all(semaforo.estado == "rojo" for semaforo in otros_semaforos):
-                self.estado = "verde"
+        tuplaDecision = self.model.calcularCarrosEsperando(self.ganador)
+        
+        if tuplaDecision[0] > tuplaDecision[1]:
+            listaNorte = self.semaforos["Norte"]
+            listaEste = self.semaforos["Este"]
+            self.ganador = "Norte"
+            for semaforoN in listaNorte:
+                semaforoN.cambiarEstado("verde")
+            for semaforoE in listaEste:
+                semaforoE.cambiarEstado("rojo")
         else:
-            # Si el semáforo actual está en verde, verificar que algún semáforo en una dirección diferente esté en verde
-            if self.estado == "verde":
-                otros_semaforos = [self.model.get_agent(f"Semaforo_{direccion}") for direccion in self.otras_direcciones if direccion != self.direccion]
-                if any(semaforo.estado == "verde" for semaforo in otros_semaforos):
-                    self.estado = "rojo"
-    
-    def getSemaforoGraphic(self):
-        #Por si en algún momento se necesita el Cubo Gráfico externamente
-        return self.semaforoGraphic
-    
-    def punto_en_area_circular(self, punto):
-        distancia = math.sqrt((punto[0] - self.posicion[0])**2 + (punto[1] - self.posicion[1])**2 + (punto[2] - self.posicion[2])**2)
-        return distancia <= self.radio
-    
+            listaNorte = self.semaforos["Norte"]
+            listaEste = self.semaforos["Este"]
+            self.ganador = "Este"
+            for semaforoN in listaNorte:
+                semaforoN.cambiarEstado("rojo")
+            for semaforoE in listaEste:
+                semaforoE.cambiarEstado("verde")
+    def getSemaforos(self):
+        semaforosLista = self.semaforos["Norte"] + self.semaforos["Este"]
+        return semaforosLista
+    def getSemaforosDict(self):
+        return self.semaforos
 #Clase del modelo
 class TraficModel(ap.Model):
-    
+            
     def setup(self):
+        self.carroslist = ap.AgentList(self, self.p.carros_n, CarroAgente)
+        self.semaforoslist = ap.AgentList(self, 1, SemaforoAgente)
         self.done = False
-        # Importante llamar a Init() para inicializar el Cubo Gráfico antes del Agente Cubo
         Init()
-        # # Inicializar los semáforos con sus posiciones y direcciones
-        # semaforo_norte = SemaforoAgent(self, posicion=(-40, 0, 120), direccion="Norte")
-        # semaforo_este = SemaforoAgent(self, posicion=(-40, 0, -90), direccion="Este")
-        # Inicializar los agentes Cubos
-        self.carroslist = ap.AgentList(self, self.p.carros_n, CarroAgent)
-        print("CARROS LIST: ", self.carroslist)
-        self.semaforoslist = ap.AgentList(self, self.p.carros_n, SemaforoAgent)
-        print("sEMAFOROS LIST: ", self.semaforoslist)
-        # Agregar los Cubos Gráficos (definidos globalmente al inicio del código) a la lista de agentes Cubo.
-        self.carroslist.carroGraphic = ap.AttrIter(carros)
-        self.semaforoslist.semaforoGraphic = ap.AttrIter(semaforos)
         pass
     
-
-    
     def step(self):
-        self.carroslist.step()
+        
+        carros = self.obtenerInstanciasCarros()
+        semaforos = self.obtenerInstanciasSemaforos()
+        self.colocarInstanciasCarrosEnSemaforos()
+        self.colocarInstanciasCarrosEnCarros()
         for carro in carros:
             direccion_carro = carro.destino
-            print("ESTOY CHECANDO UN CARRO CON DESTINO", direccion_carro)
             semaforos_misma_direccion = [semaforo for semaforo in semaforos if semaforo.destino == direccion_carro]
-            print(semaforos_misma_direccion)
             for semaforo in semaforos_misma_direccion:
                 if semaforo.punto_en_area_circular(carro.Position):
-                    print("ALGUNA VEZ LLEGÓ A ESTAR EN EL AREA CIRCULAR")
                     if semaforo.state == "rojo":
-                        print("ALGUNA VEZ LLEGÓ A PARAR")
                         carro.detenido = True  # Activar bandera de detención
                         carro.velocidad = 0
                     else:
                         carro.detenido = False  # Desactivar bandera de detención
                         carro.velocidad = 4  # Restablecer velocidad
                         break
-                    
-        # self.carroslist.step()
-        # carros_esperando = calcular_carros_esperando(self.semaforoslist, self.carroslist)
-        #
-        # for semaforo in self.semaforoslist:
-        #     semaforo.step()
-        #     semaforo.carros_parados = True  # Establecer inicialmente a True, se actualizará en el siguiente bloque
-        #     if semaforo.estado == "rojo" and semaforo in carros_esperando:
-        #         semaforo.carros_parados = False
-        #
-        # for carro in self.carroslist:
-        #     direccion_carro = carro.destino
-        #     semaforos_misma_direccion = [semaforo for semaforo in self.semaforoslist if semaforo.direccion == direccion_carro]
-        #     for semaforo in semaforos_misma_direccion:
-        #         if semaforo.punto_en_area_circular(carro.carroGraphic.Position):
-        #             if semaforo.estado == "rojo":
-        #                 carro.detenido = True
-        #                 carro.velocidad = 0
-        #             else:
-        #                 carro.detenido = False
-        #                 carro.velocidad = 4
-        #                 break
-                    
+        self.semaforoslist.step()
+        
+        """
+        for semaforo in self.semaforoslist:
+            semaforo.step()
+            semaforo.carros_parados = True  # Establecer inicialmente a True, se actualizará en el siguiente bloque
+            if semaforo.estado == "rojo" and semaforo in carros_esperando:
+                semaforo.carros_parados = False
+
+        for carro in self.carroslist:
+            direccion_carro = carro.destino
+            semaforos_misma_direccion = [semaforo for semaforo in self.semaforoslist if semaforo.direccion == direccion_carro]
+            for semaforo in semaforos_misma_direccion:
+                if semaforo.punto_en_area_circular(carro.Position):
+                    if semaforo.estado == "rojo":
+                        carro.detenido = True
+                        carro.velocidad = 0
+                    else:
+                        carro.detenido = False
+                        carro.velocidad = 4
+                        break
+        """
+    def obtenerInstanciasSemaforos(self):
+        semaforos = []
+        for semaforo in self.semaforoslist:
+            semaforos = semaforo.getSemaforos()
+        return semaforos
+    def obtenerInstanciasCarros(self):
+        carros = []
+        for carro in self.carroslist:
+            carros.append(carro.getCarroGraphic())
+        return carros
+    def colocarInstanciasCarrosEnSemaforos(self):
+        carros = self.obtenerInstanciasCarros()
+        semaforos = self.obtenerInstanciasSemaforos()
+        for semaforo in semaforos:
+            semaforo.cambiarCarros(carros)
+    def colocarInstanciasCarrosEnCarros(self):
+        carros = self.obtenerInstanciasCarros()
+        for carro in carros:
+            carro.cambiarCarros(carros)
+    def calcularCarrosEsperando(self, ganadorPasado):
+        carros = self.obtenerInstanciasCarros()
+        for semaforo in self.semaforoslist:
+            semaforosDict = semaforo.getSemaforosDict()
+            semaforosNorte = semaforosDict["Norte"]
+            semaforosEste = semaforosDict["Este"]
+            contadorNorte = 0
+            contadorEste = 0
+            if ganadorPasado == "Norte":
+                contadorEste = 2
+            elif ganadorPasado == "Este":
+                contadorNorte = 2
+            for semaforoN in semaforosNorte:
+                numeroNorte = semaforoN.calcularCarrosAlrededor()
+                contadorNorte += numeroNorte
+            for semaforoE in semaforosEste:
+                numeroE = semaforoE.calcularCarrosAlrededor()
+                contadorEste += numeroE
+            return (contadorNorte, contadorEste)           
 
 
     def update(self):
@@ -650,19 +651,11 @@ class TraficModel(ap.Model):
     
     def end(self):
         pass
-    
-def calcular_carros_esperando(semaforos, carros):
-    carros_esperando = {semaforo: 0 for semaforo in semaforos}
 
-    for carro in carros:
-        for semaforo in semaforos:
-            if semaforo.punto_en_area_circular(carro.carroGraphic.Position):
-                carros_esperando[semaforo] += 1
-
-    return carros_esperando
 
 parameters ={
-    "carros_n" : ncarros,
+    "carros_n" : 12,
+    "semaforos_n": 3,
     "steps" : 3000,
     "seed" : 21
 }

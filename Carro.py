@@ -27,6 +27,12 @@ class Carro:
         self.giveposition()
         self.adjustrotation()
         self.detenido = False
+        self.cars = None
+        
+    def getPosition(self):
+        return self.Position
+    def cambiarCarros(self, carros):
+        self.cars = carros
 
     def update(self):
         if not self.detenido:

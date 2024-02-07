@@ -13,26 +13,39 @@ import numpy as np
 
 class Semaforo:
 
-    def __init__(self, dim, obj, pos, cars, destino,estado):
+    def __init__(self, dim, obj, pos, destino, luz):
         self.obj = obj
         self.pos = pos
-        self.cars = cars
+        self.cars = None
         self.destino = destino
-        self.state = estado
+        self.state = "rojo"
+        self.luz = luz
         self.radio = 50
+        self.radioGeneral = 200
         self.DimBoard = dim
         self.rotationAngle = -90.0
         self.newAngle = 0.0
         self.Position = [0.0, 0.0, 0.0]
         self.giveposition()
         self.adjustrotation()
-
+    def cambiarCarros(self, carros):
+        self.cars = carros
+    def cambiarEstado(self, estado):
+        self.state = estado
     def update(self):
         #Change state here?
         var = 0
     def punto_en_area_circular(self, punto):
         distancia = math.sqrt((punto[0] - self.Position[0])**2 + (punto[1] - self.Position[1])**2 + (punto[2] - self.Position[2])**2)
         return distancia <= self.radio
+    def calcularCarrosAlrededor(self):
+        contador = 0
+        for carro in self.cars:
+            posicionCarro = carro.getPosition()
+            distancia = math.sqrt((posicionCarro[0] - self.Position[0])**2 + (posicionCarro[1] - self.Position[1])**2 + (posicionCarro[2] - self.Position[2])**2)
+            if distancia <= self.radio:
+                contador += 1
+        return contador
     # Adjust rotation of object being drawn depending on position
     def adjustrotation(self):
         if self.pos == 1 or self.pos == 2:
