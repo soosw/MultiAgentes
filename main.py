@@ -103,8 +103,8 @@ def Init():
     carros.append(Carro(DimBoard, 1.0, objetos[4], 2,  "Este"))
     carros.append(Carro(DimBoard, 1.0, objetos[4], 3,  "Este"))
 
-    semaforos.append(Semaforo(DimBoard, objetos[5], 1, carros,  "Norte", "rojo"))
-    semaforos.append(Semaforo(DimBoard, objetos[5], 2, carros,  "Este", "verde"))
+    semaforos.append(Semaforo(DimBoard, objetos[5], 1, carros,  "Norte", "verde"))
+    semaforos.append(Semaforo(DimBoard, objetos[5], 2, carros,  "Este", "rojo"))
     semaforos.append(Semaforo(DimBoard, objetos[5], 3, carros,  "Este", "rojo"))
 
 
@@ -562,9 +562,9 @@ class TraficModel(ap.Model):
         self.done = False
         # Importante llamar a Init() para inicializar el Cubo Gráfico antes del Agente Cubo
         Init()
-        # Inicializar los semáforos con sus posiciones y direcciones
-        semaforo_norte = SemaforoAgent(self, posicion=(-40, 0, 120), direccion="Norte")
-        semaforo_este = SemaforoAgent(self, posicion=(-40, 0, -90), direccion="Este")
+        # # Inicializar los semáforos con sus posiciones y direcciones
+        # semaforo_norte = SemaforoAgent(self, posicion=(-40, 0, 120), direccion="Norte")
+        # semaforo_este = SemaforoAgent(self, posicion=(-40, 0, -90), direccion="Este")
         # Inicializar los agentes Cubos
         self.carroslist = ap.AgentList(self, self.p.carros_n, CarroAgent)
         print("CARROS LIST: ", self.carroslist)

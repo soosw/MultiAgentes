@@ -17,7 +17,7 @@ class Semaforo:
         self.obj = obj
         self.pos = pos
         self.cars = cars
-        self.destino = "Norte"
+        self.destino = destino
         self.state = estado
         self.radio = 50
         self.DimBoard = dim

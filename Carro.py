@@ -19,7 +19,7 @@ class Carro:
         self.vel = vel
         self.rotationAngle = -90.0
         self.newAngle = 0.0
-        self.destino = "Norte"
+        self.destino = destino
         # Placeholder position
         self.Position = [0.0,0.0,0.0]
         # Placeholder direction
