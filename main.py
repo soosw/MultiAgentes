@@ -507,6 +507,12 @@ class SemaforoAgente(ap.Agent):
         Init()
         self.semaforos = {"Norte": [Semaforo(DimBoard, objetos[5], 1,  "Norte", "rojo"), Semaforo(DimBoard, objetos[5], 2,  "Norte", "rojo")], "Este":[Semaforo(DimBoard, objetos[5], 3,  "Este", "rojo"), Semaforo(DimBoard, objetos[5], 4,  "Este", "rojo")]}
         self.ganador = "Norte"
+    def update(self):
+        listsemaforo = self.semaforos["Norte"] + self.semaforos["Este"]
+        for semaforo in listsemaforo:
+            print(semaforo.Position)
+            semaforo.draw()
+
     def step(self):
         tuplaDecision = self.model.calcularCarrosEsperando(self.ganador)
         
@@ -557,7 +563,7 @@ class TraficModel(ap.Model):
                         carro.velocidad = 0
                     else:
                         carro.detenido = False  # Desactivar bandera de detención
-                        carro.velocidad = 4  # Restablecer velocidad
+                        carro.velocidad = 10 # Restablecer velocidad
                         break
         self.semaforoslist.step()
         
@@ -628,6 +634,7 @@ class TraficModel(ap.Model):
                 self.done = True
         display()
         self.carroslist.update()
+        self.semaforoslist.update()
         pygame.display.flip()
         pygame.time.wait(10)
         
@@ -654,7 +661,7 @@ class TraficModel(ap.Model):
 
 
 parameters ={
-    "carros_n" : 12,
+    "carros_n" : 5,
     "semaforos_n": 3,
     "steps" : 3000,
     "seed" : 21
