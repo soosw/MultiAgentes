@@ -100,7 +100,7 @@ class Carro:
         glTranslatef(self.Position[0], self.Position[1], self.Position[2])
         glRotatef(self.rotationAngle, 1.0, 0.0, 0.0)
         glRotatef(self.newAngle, 0.0, 0.0, 1.0)
-        glScaled(5,5,5)
+        glScaled(2,2,2)
         glColor3f(1.0, 1.0, 1.0)
         self.obj.render()
         glPopMatrix()
