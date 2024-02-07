@@ -51,7 +51,7 @@ radius = 300
 pygame.init()
 
 carros = []
-ncarros = 5
+ncarros = 3
 
 semaforos = []
 
@@ -99,9 +99,9 @@ def Init():
     carros.append(Carro(DimBoard, 4.0, objetos[4], 1, "Norte"))
     carros.append(Carro(DimBoard, 4.0, objetos[4], 2,  "Este"))
     carros.append(Carro(DimBoard, 4.0, objetos[4], 3,  "Este"))
-    carros.append(Carro(DimBoard, 1.0, objetos[4], 1, "Norte"))
-    carros.append(Carro(DimBoard, 1.0, objetos[4], 2,  "Este"))
-    carros.append(Carro(DimBoard, 1.0, objetos[4], 3,  "Este"))
+    # carros.append(Carro(DimBoard, 1.0, objetos[4], 1, "Norte"))
+    # carros.append(Carro(DimBoard, 1.0, objetos[4], 2,  "Este"))
+    # carros.append(Carro(DimBoard, 1.0, objetos[4], 3,  "Este"))
 
     semaforos.append(Semaforo(DimBoard, objetos[5], 1, carros,  "Norte", "verde"))
     semaforos.append(Semaforo(DimBoard, objetos[5], 2, carros,  "Este", "rojo"))
@@ -578,45 +578,45 @@ class TraficModel(ap.Model):
 
     
     def step(self):
-        # self.carroslist.step()
-        # for carro in carros:
-        #     direccion_carro = carro.destino
-        #     print("ESTOY CHECANDO UN CARRO CON DESTINO", direccion_carro)
-        #     semaforos_misma_direccion = [semaforo for semaforo in semaforos if semaforo.destino == direccion_carro]
-        #     print(semaforos_misma_direccion)
-        #     for semaforo in semaforos_misma_direccion:
-        #         if semaforo.punto_en_area_circular(carro.Position):
-        #             print("ALGUNA VEZ LLEGÓ A ESTAR EN EL AREA CIRCULAR")
-        #             if semaforo.state == "rojo":
-        #                 print("ALGUNA VEZ LLEGÓ A PARAR")
-        #                 carro.detenido = True  # Activar bandera de detención
-        #                 carro.velocidad = 0
-        #             else:
-        #                 carro.detenido = False  # Desactivar bandera de detención
-        #                 carro.velocidad = 4  # Restablecer velocidad
-        #                 break
-                    
         self.carroslist.step()
-        carros_esperando = calcular_carros_esperando(self.semaforoslist, self.carroslist)
-
-        for semaforo in self.semaforoslist:
-            semaforo.step()
-            semaforo.carros_parados = True  # Establecer inicialmente a True, se actualizará en el siguiente bloque
-            if semaforo.estado == "rojo" and semaforo in carros_esperando:
-                semaforo.carros_parados = False
-
-        for carro in self.carroslist:
+        for carro in carros:
             direccion_carro = carro.destino
-            semaforos_misma_direccion = [semaforo for semaforo in self.semaforoslist if semaforo.direccion == direccion_carro]
+            print("ESTOY CHECANDO UN CARRO CON DESTINO", direccion_carro)
+            semaforos_misma_direccion = [semaforo for semaforo in semaforos if semaforo.destino == direccion_carro]
+            print(semaforos_misma_direccion)
             for semaforo in semaforos_misma_direccion:
-                if semaforo.punto_en_area_circular(carro.carroGraphic.Position):
-                    if semaforo.estado == "rojo":
-                        carro.detenido = True
+                if semaforo.punto_en_area_circular(carro.Position):
+                    print("ALGUNA VEZ LLEGÓ A ESTAR EN EL AREA CIRCULAR")
+                    if semaforo.state == "rojo":
+                        print("ALGUNA VEZ LLEGÓ A PARAR")
+                        carro.detenido = True  # Activar bandera de detención
                         carro.velocidad = 0
                     else:
-                        carro.detenido = False
-                        carro.velocidad = 4
+                        carro.detenido = False  # Desactivar bandera de detención
+                        carro.velocidad = 4  # Restablecer velocidad
                         break
+                    
+        # self.carroslist.step()
+        # carros_esperando = calcular_carros_esperando(self.semaforoslist, self.carroslist)
+        #
+        # for semaforo in self.semaforoslist:
+        #     semaforo.step()
+        #     semaforo.carros_parados = True  # Establecer inicialmente a True, se actualizará en el siguiente bloque
+        #     if semaforo.estado == "rojo" and semaforo in carros_esperando:
+        #         semaforo.carros_parados = False
+        #
+        # for carro in self.carroslist:
+        #     direccion_carro = carro.destino
+        #     semaforos_misma_direccion = [semaforo for semaforo in self.semaforoslist if semaforo.direccion == direccion_carro]
+        #     for semaforo in semaforos_misma_direccion:
+        #         if semaforo.punto_en_area_circular(carro.carroGraphic.Position):
+        #             if semaforo.estado == "rojo":
+        #                 carro.detenido = True
+        #                 carro.velocidad = 0
+        #             else:
+        #                 carro.detenido = False
+        #                 carro.velocidad = 4
+        #                 break
                     
 
 
